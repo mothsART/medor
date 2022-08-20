@@ -1,0 +1,21 @@
+[package]
+name = "medor"
+version = "0.1.0"
+authors = ["Ferry Jérémie <ferryjeremie@free.fr>"]
+description = "Search and launch an application"
+keywords = ["app", "cli", "gui", "launch", "search"]
+categories = ["command-line-utilities"]
+license-file = "LICENSE"
+readme = "README.md"
+repository = "https://github.com/mothsart/medor"
+homepage = "https://github.com/mothsart/medor"
+edition = "2021"
+rust = "1.60"
+
+[dependencies]
+desktopd = { version = "0.1", path = "../desktopd" }
+clap = { version="3.2", features=['cargo'] }
+
+[build-dependencies]
+clap = { version="3.2", features=['cargo'] }
+clap_complete = { version="3.2" }

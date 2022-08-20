@@ -1,0 +1,32 @@
+#compdef medor
+
+autoload -U is-at-least
+
+_medor() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-a+[search app name]: : ' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+}
+
+(( $+functions[_medor_commands] )) ||
+_medor_commands() {
+    local commands; commands=()
+    _describe -t commands 'medor commands' commands "$@"
+}
+
+_medor "$@"
