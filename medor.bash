@@ -8,8 +8,8 @@ _medor() {
 
     for i in ${COMP_WORDS[@]}
     do
-        case "${i}" in
-            "$1")
+        case "${cmd},${i}" in
+            ",$1")
                 cmd="medor"
                 ;;
             *)
@@ -19,7 +19,7 @@ _medor() {
 
     case "${cmd}" in
         medor)
-            opts="-h -V -a --help --version"
+            opts="-a -h -V --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

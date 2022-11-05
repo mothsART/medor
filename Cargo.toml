@@ -10,12 +10,12 @@ readme = "README.md"
 repository = "https://github.com/mothsart/medor"
 homepage = "https://github.com/mothsart/medor"
 edition = "2021"
-rust = "1.60"
+rust-version = "1.62"
 
 [dependencies]
 desktopd = { version = "0.1", path = "../desktopd" }
-clap = { version="3.2", features=['cargo'] }
+clap = { version="4.0", features=['cargo'] }
 
 [build-dependencies]
-clap = { version="3.2", features=['cargo'] }
-clap_complete = { version="3.2" }
+clap = { version="4.0", features=['cargo'] }
+clap_complete = { version="4.0" }
