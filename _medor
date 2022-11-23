@@ -16,6 +16,7 @@ _medor() {
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
 '-a+[search app name]: : ' \
+'-d[debug mode (show SQL requests)]' \
 '-h[Print help information]' \
 '--help[Print help information]' \
 '-V[Print version information]' \

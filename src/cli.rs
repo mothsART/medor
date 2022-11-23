@@ -13,4 +13,10 @@ pub fn build_cli(name: &'static str, version: &'static str) -> Command {
                 .help("search app name")
                 .required(true),
         )
+        .arg(
+            Arg::new("debug")
+                .short('d')
+                .action(clap::ArgAction::SetTrue)
+                .help("debug mode (show SQL requests)")
+        )
 }

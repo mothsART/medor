@@ -19,7 +19,7 @@ _medor() {
 
     case "${cmd}" in
         medor)
-            opts="-a -h -V --help --version"
+            opts="-a -d -h -V --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
