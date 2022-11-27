@@ -4,8 +4,9 @@ extern crate desktopd;
 
 use std::env;
 use std::io::stdin;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
+use desktopd::desktop::FIELDS_CODE;
 use desktopd::models::SearchResult;
 use desktopd::db::basic::{Db, DesktopDDb};
 use desktopd::db::search::SearchDb;
@@ -20,28 +21,33 @@ fn get_local() -> String {
 }
 
 fn launch_app(result: &SearchResult) {
-    println!("{:?}", result);
-    //if 
-    //Command::new(result.).output();
+    let mut exec_cmd = result.exec.clone();
+    for field in FIELDS_CODE {
+        exec_cmd = exec_cmd.replace(&format!("%{}", field), "");
+    }
+    Command::new(exec_cmd.trim())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect(&format!("\"{}\" failed to start", exec_cmd.trim()));
 }
 
-fn prompt(title: &str, results: &Vec<Option<SearchResult>>, len: usize) {
+fn prompt(title: &str, results: &Vec<SearchResult>, len: usize) {
     if len == 1 {
         let first_r = results.first();
-        if let Some(Some(r)) = &first_r {
+        if let Some(r) = &first_r {
             let title = &r.title;
-            let c = r.comment.as_ref();
             println!(
-                "Launch \"{}\" : {} [yn]?", 
-                &title, &c.unwrap_or(&"".to_string())
+                "Launch \"{}\" {} : [yn]?",
+                &title , r.comment
             );
             let mut input = String::new();
-            let read_input = stdin().read_line(&mut input);
+            let _read_input = stdin().read_line(&mut input);
             if let Ok(input_value) = input.trim().parse::<char>() {
                 if input_value == 'y' {
                     launch_app(r);
                 } else if input_value != 'n' {
-                    prompt("", results, len);
+                    prompt(&format!("Wrong input \"{}\". Retry :", input_value), results, len);
                 }
             }
         } else {
@@ -50,40 +56,21 @@ fn prompt(title: &str, results: &Vec<Option<SearchResult>>, len: usize) {
         return;
     }
     println!("{}", title);
-    let mut inc = 0;
-    for result in results {
-        if let Some(r) = result {
-            let c = r.comment.as_ref();
-            println!("{}) {} :  \"{}\"", inc, r.title, &c.unwrap_or(&"".to_string()));
-            inc += 1;
-        }
+    for (i, result) in results.iter().enumerate() {
+        println!("{}) : {} \"{}\"", i, result.title, result.comment);
     }
     let mut input = String::new();
-    let read_input = stdin().read_line(&mut input);
+    let _read_input = stdin().read_line(&mut input);
     
     if let Ok(input_value) = input.trim().parse::<usize>() {
-        //if let Some(trim_value) = input_value.trim() {
-        println!("yolo {}", input_value);
-        //}
-        /*match i.trim().parse::<usize>() {
-            Ok(value) if value > 0 && value <= len => {
-                /*let program = kill_list.get(value - 1).unwrap();
-                let killall_cmd = Command::new("killall").arg(program).output();
-                match killall_cmd {
-                    Ok(_v) => {
-                        println!("\"{}\" has been killed", program);
-                    }
-                    Err(_e) => {
-                        eprintln!("{} did'nt succeed in killing {}", crate_name!(), program);
-                    }
-                }
-                */
-            }
-            Ok(input) => prompt(&format!("Wrong input \"{}\". Retry :", input), results),
-            Err(_e) => prompt(&format!("Wrong input \"{}\". Retry :", input), results),
-        };*/
+        if input_value >= len {
+            return prompt(&format!("Wrong input \"{}\". Retry :", input_value), results, len);
+        }
+        if let Some(r) = results.get(input_value) {
+            launch_app(r);
+        }
     } else {
-        return prompt("Wrong input \"a\". Retry :", results, len);
+        prompt(&format!("Wrong input \"{}\". Retry :", input.trim()), results, len);
     }
 }
 
@@ -104,8 +91,7 @@ fn main() {
             if len == 0 {
                 println!("No results");
             } else {
-                println!("{}", len);
-                prompt("Choose application to launch :", r, len);
+                prompt("Choose an application to launch :", r, len);
             }
         } else {
             println!("No results");
