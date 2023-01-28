@@ -17,6 +17,6 @@ pub fn build_cli(name: &'static str, version: &'static str) -> Command {
             Arg::new("debug")
                 .short('d')
                 .action(clap::ArgAction::SetTrue)
-                .help("debug mode (show SQL requests)")
+                .help("debug mode (show SQL requests)"),
         )
 }

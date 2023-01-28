@@ -6,10 +6,10 @@ use std::env;
 use std::io::stdin;
 use std::process::{Command, Stdio};
 
-use desktopd::desktop::FIELDS_CODE;
-use desktopd::models::SearchResult;
 use desktopd::db::basic::{Db, DesktopDDb};
 use desktopd::db::search::SearchDb;
+use desktopd::desktop::FIELDS_CODE;
+use desktopd::models::SearchResult;
 
 use medor::cli::build_cli;
 
@@ -37,17 +37,18 @@ fn prompt(title: &str, results: &Vec<SearchResult>, len: usize) {
         let first_r = results.first();
         if let Some(r) = &first_r {
             let title = &r.title;
-            println!(
-                "Launch \"{}\" {} : [yn]?",
-                &title , r.comment
-            );
+            println!("Launch \"{}\" {} : [yn]?", &title, r.comment);
             let mut input = String::new();
             let _read_input = stdin().read_line(&mut input);
             if let Ok(input_value) = input.trim().parse::<char>() {
                 if input_value == 'y' {
                     launch_app(r);
                 } else if input_value != 'n' {
-                    prompt(&format!("Wrong input \"{input_value}\". Retry :"), results, len);
+                    prompt(
+                        &format!("Wrong input \"{input_value}\". Retry :"),
+                        results,
+                        len,
+                    );
                 }
             }
         } else {
@@ -61,16 +62,24 @@ fn prompt(title: &str, results: &Vec<SearchResult>, len: usize) {
     }
     let mut input = String::new();
     let _read_input = stdin().read_line(&mut input);
-    
+
     if let Ok(input_value) = input.trim().parse::<usize>() {
         if input_value >= len {
-            return prompt(&format!("Wrong input \"{input_value}\". Retry :"), results, len);
+            return prompt(
+                &format!("Wrong input \"{input_value}\". Retry :"),
+                results,
+                len,
+            );
         }
         if let Some(r) = results.get(input_value) {
             launch_app(r);
         }
     } else {
-        prompt(&format!("Wrong input \"{}\". Retry :", input.trim()), results, len);
+        prompt(
+            &format!("Wrong input \"{}\". Retry :", input.trim()),
+            results,
+            len,
+        );
     }
 }
 
