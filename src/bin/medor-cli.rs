@@ -23,13 +23,13 @@ fn get_local() -> String {
 fn launch_app(result: &SearchResult) {
     let mut exec_cmd = result.exec.clone();
     for field in FIELDS_CODE {
-        exec_cmd = exec_cmd.replace(&format!("%{}", field), "");
+        exec_cmd = exec_cmd.replace(&format!("%{field}"), "");
     }
     Command::new(exec_cmd.trim())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
-        .expect(&format!("\"{}\" failed to start", exec_cmd.trim()));
+        .unwrap_or_else(|_| panic!("\"{}\" failed to start", exec_cmd.trim()));
 }
 
 fn prompt(title: &str, results: &Vec<SearchResult>, len: usize) {
@@ -47,7 +47,7 @@ fn prompt(title: &str, results: &Vec<SearchResult>, len: usize) {
                 if input_value == 'y' {
                     launch_app(r);
                 } else if input_value != 'n' {
-                    prompt(&format!("Wrong input \"{}\". Retry :", input_value), results, len);
+                    prompt(&format!("Wrong input \"{input_value}\". Retry :"), results, len);
                 }
             }
         } else {
@@ -55,7 +55,7 @@ fn prompt(title: &str, results: &Vec<SearchResult>, len: usize) {
         }
         return;
     }
-    println!("{}", title);
+    println!("{title}");
     for (i, result) in results.iter().enumerate() {
         println!("{}) : {} \"{}\"", i, result.title, result.comment);
     }
@@ -64,7 +64,7 @@ fn prompt(title: &str, results: &Vec<SearchResult>, len: usize) {
     
     if let Ok(input_value) = input.trim().parse::<usize>() {
         if input_value >= len {
-            return prompt(&format!("Wrong input \"{}\". Retry :", input_value), results, len);
+            return prompt(&format!("Wrong input \"{input_value}\". Retry :"), results, len);
         }
         if let Some(r) = results.get(input_value) {
             launch_app(r);
